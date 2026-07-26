@@ -1,0 +1,22 @@
+#pragma code_page(65001)
+#include <windows.h>
+#include "resource.h"
+
+IDD_CONFIG_DIALOG DIALOGEX 0, 0, 250, 160
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "SRT出力設定"
+FONT 9, "MS UI Gothic", 400, 0, 0x80
+BEGIN
+    LTEXT           "キャラクター名の付与タイミング:", IDC_STATIC, 10, 10, 150, 8
+    AUTORADIOBUTTON "常に付与する", IDC_RADIO_ALL, 15, 25, 200, 10, WS_GROUP
+    AUTORADIOBUTTON "最初の一回のみ付与", IDC_RADIO_FIRST, 15, 40, 200, 10
+    AUTORADIOBUTTON "話者が変わった時のみ付与", IDC_RADIO_CHANGE, 15, 55, 200, 10
+    AUTORADIOBUTTON "付与しない", IDC_RADIO_NONE, 15, 70, 200, 10
+
+    LTEXT           "表記形式 (フォーマット):", IDC_STATIC, 10, 90, 150, 8
+    LTEXT           "※ {name} がキャラ名、{text} がセリフに置き換わります", IDC_STATIC, 15, 100, 220, 8
+    EDITTEXT        IDC_EDIT_FORMAT, 15, 110, 220, 14, ES_AUTOHSCROLL
+
+    DEFPUSHBUTTON   "保存して閉じる", IDOK, 115, 140, 65, 14
+    PUSHBUTTON      "キャンセル", IDCANCEL, 185, 140, 50, 14
+END

@@ -1,0 +1,6 @@
+*.md
+*.aux2
+*.lib
+*.exp
+*.obj
+*.res

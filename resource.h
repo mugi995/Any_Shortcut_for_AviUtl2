@@ -1,0 +1,42 @@
+#pragma once
+
+#define IDD_MAIN_DIALOG       101
+#define IDD_CMDEDIT_DIALOG    102
+#define IDC_CMD_LIST          1001
+#define IDC_BTN_ADD           1002
+#define IDC_BTN_EDIT          1003
+#define IDC_BTN_DELETE        1004
+#define IDC_BTN_SAVE          1005
+#define IDC_BTN_CLOSE         1006
+#define IDC_BTN_ADD_STEP      1007
+#define IDC_BTN_DEL_STEP      1008
+#define IDC_EDIT_NAME         1009
+#define IDC_EDIT_CATEGORY     1010
+#define IDC_STEP_LIST         1011
+#define IDC_COMBO_STEPTYPE    1013
+#define IDC_EDIT_TARGET       1014
+#define IDC_EDIT_PARAMNAME    1015
+#define IDC_EDIT_PARAMVALUE   1016
+#define IDC_BTN_OK            1018
+#define IDC_BTN_CANCEL        1019
+#define IDC_STATIC_CMDNAME    1020
+#define IDC_STATIC_CATEGORY   1021
+#define IDC_STATIC_PARAMLABEL  1025
+#define IDC_STATIC_VALUELABEL  1026
+#define IDC_BTN_UP             1027
+#define IDC_BTN_DOWN           1028
+#define IDC_BTN_UPDATE         1029
+#define IDC_STATIC_POSLABEL    1030
+#define IDC_COMBO_POS          1031
+#define IDC_STATIC_LAYERLABEL  1032
+#define IDC_EDIT_LAYER         1033
+#define IDC_BTN_BROWSE         1034
+#define IDC_COMBO_CHECKVAL      1036
+#define IDC_BTN_COLOR           1037
+#define IDC_COMBO_VALMODE       1038
+#define IDC_CHK_ADDMODE         1042
+#define IDC_BTN_FILE_BROWSE     1039
+#define IDC_COMBO_FONTVAL       1040
+#define IDC_COMBO_SELECTVAL     1041
+
+#define IDR_VERSION           1
