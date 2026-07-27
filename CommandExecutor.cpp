@@ -143,19 +143,36 @@ namespace CommandExecutor {
         std::wstring real_path = path;
         size_t pos = real_path.find(L"%Alias%");
         if (pos != std::wstring::npos) {
+            std::wstring alias_name = real_path.substr(pos + 7);
+
+            // DLL 同階層の alias フォルダ
             WCHAR mod_path[MAX_PATH] = {0};
             if (g_hInstance && GetModuleFileNameW(g_hInstance, mod_path, MAX_PATH)) {
                 std::wstring dir = mod_path;
                 size_t slash = dir.find_last_of(L"\\/");
                 if (slash != std::wstring::npos) dir = dir.substr(0, slash);
-                real_path = dir + L"\\alias" + real_path.substr(pos + 7);
+                real_path = dir + L"\\alias" + alias_name;
             }
+
+            std::ifstream ifs1(real_path, std::ios::binary);
+            if (ifs1.is_open()) {
+                return std::string((std::istreambuf_iterator<char>(ifs1)), std::istreambuf_iterator<char>());
+            }
+
+            // AviUtl2 本体の alias フォルダにもフォールバック
+            if (g_config && g_config->app_data_path) {
+                std::wstring config_alias = std::wstring(g_config->app_data_path) + L"\\alias" + alias_name;
+                std::ifstream ifs2(config_alias, std::ios::binary);
+                if (ifs2.is_open()) {
+                    return std::string((std::istreambuf_iterator<char>(ifs2)), std::istreambuf_iterator<char>());
+                }
+            }
+            return "";
         }
 
         std::ifstream ifs(real_path, std::ios::binary);
         if (!ifs.is_open()) return "";
-        std::string content((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-        return content;
+        return std::string((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
     }
 
     bool ExecuteCommand(const ShortcutCommand& cmd, EDIT_SECTION* edit) {
