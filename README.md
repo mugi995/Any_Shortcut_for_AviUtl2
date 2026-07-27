@@ -34,4 +34,4 @@ AviUtl2 (ExEdit2) 用ショートカット機能拡張プラグイン。
 
 ## 設定ファイル
 
-プラグインと同じフォルダに生成される`config.json` に保存される。
+プラグインと同じフォルダに生成される`Any_Shortcut_for_AviUtl2.json` に保存される。
