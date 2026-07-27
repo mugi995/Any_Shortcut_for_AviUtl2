@@ -143,19 +143,36 @@ namespace CommandExecutor {
         std::wstring real_path = path;
         size_t pos = real_path.find(L"%Alias%");
         if (pos != std::wstring::npos) {
+            std::wstring alias_name = real_path.substr(pos + 7);
+
+            // DLL 同階層の alias フォルダ
             WCHAR mod_path[MAX_PATH] = {0};
             if (g_hInstance && GetModuleFileNameW(g_hInstance, mod_path, MAX_PATH)) {
                 std::wstring dir = mod_path;
                 size_t slash = dir.find_last_of(L"\\/");
                 if (slash != std::wstring::npos) dir = dir.substr(0, slash);
-                real_path = dir + L"\\alias" + real_path.substr(pos + 7);
+                real_path = dir + L"\\alias" + alias_name;
             }
+
+            std::ifstream ifs1(real_path, std::ios::binary);
+            if (ifs1.is_open()) {
+                return std::string((std::istreambuf_iterator<char>(ifs1)), std::istreambuf_iterator<char>());
+            }
+
+            // AviUtl2 本体の alias フォルダにもフォールバック
+            if (g_config && g_config->app_data_path) {
+                std::wstring config_alias = std::wstring(g_config->app_data_path) + L"\\alias" + alias_name;
+                std::ifstream ifs2(config_alias, std::ios::binary);
+                if (ifs2.is_open()) {
+                    return std::string((std::istreambuf_iterator<char>(ifs2)), std::istreambuf_iterator<char>());
+                }
+            }
+            return "";
         }
 
         std::ifstream ifs(real_path, std::ios::binary);
         if (!ifs.is_open()) return "";
-        std::string content((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-        return content;
+        return std::string((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
     }
 
     bool ExecuteCommand(const ShortcutCommand& cmd, EDIT_SECTION* edit) {
@@ -193,28 +210,16 @@ namespace CommandExecutor {
                                         (step.target_name.size() > 4 && step.target_name[1] == L':');
 
                     if (is_file_path) {
-                        // create_object_from_media_file は動画+音声を分離不可な結合オブジェクトになるため、
-                        // 動画ファイルエイリアスを構築して create_object_from_alias を優先
-                        std::wstring donghua = L"\u52D5\u753B\u30D5\u30A1\u30A4\u30EB"; // 動画ファイル
-                        std::string alias_utf8 = "[Object.1]\r\neffect.name=" + WStringToString(donghua) + "\r\n";
-                        alias_utf8 += WStringToString(donghua) + "=" + WStringToString(step.target_name) + "\r\n";
-                        new_obj = edit->create_object_from_alias(alias_utf8.c_str(), layer, frame, 0);
-                        if (!new_obj) {
-                            new_obj = edit->create_object_from_media_file(step.target_name.c_str(), layer, frame, 0);
-                        }
-                        if (!new_obj) {
-                            new_obj = edit->create_object(donghua.c_str(), layer, frame, 0);
-                        }
-                        if (!new_obj && g_logger) g_logger->warn(g_logger, (L"[DROP] File drop failed: " + step.target_name).c_str());
+                        new_obj = edit->create_object_from_media_file(step.target_name.c_str(), layer, frame, 0);
+                        if (!new_obj && g_logger) g_logger->warn(g_logger, (L"[DROP] Media file failed: " + step.target_name).c_str());
                     } else if (is_alias_path) {
                         std::string alias_utf8 = ReadAliasFile(step.target_name);
                         if (!alias_utf8.empty()) {
                             new_obj = edit->create_object_from_alias(alias_utf8.c_str(), layer, frame, 0);
                         }
-                        // エイリアスファイルがなければ、ファイル名からエフェクト名を抽出してフォールバック
-                        if (!new_obj) {
+                        // エイリアスが見つからない場合、ファイル名からエフェクト名を抽出してフォールバック
+                        if (!new_obj && alias_utf8.empty()) {
                             std::wstring effect_name = step.target_name;
-                            // パス部分と拡張子を除去
                             size_t slash = effect_name.find_last_of(L"\\/");
                             if (slash != std::wstring::npos) effect_name = effect_name.substr(slash + 1);
                             size_t dot = effect_name.find(L".object");
