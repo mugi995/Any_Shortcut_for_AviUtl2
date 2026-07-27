@@ -13,34 +13,18 @@ AviUtl2 (ExEdit2) 用ショートカット機能拡張プラグイン。
 ## 必要環境
 
 - AviUtl2 (拡張編集 ExEdit2)
-- Visual Studio 2022 以降 (ビルド時)
-
-## ビルド
-
-1. `aviutl2_sdk` をプロジェクトルートに配置
-2. `build.bat` を実行
-
-```bat
-build.bat
-```
-
-`Any_Shortcut_for_AviUtl2.aux2` が生成される。
 
 ## インストール
 
-生成された `.aux2` ファイルを AviUtl2 のプラグインフォルダに配置する。
+`Any_Shortcut_for_AviUtl2.aux2` を AviUtl2 のプラグインフォルダに配置する。
 
 ## 使い方
 
-1. AviUtl2 のメニュー「編集」→「Every_shortcut設定」で設定画面を開く
+1. AviUtl2 のメニュー「編集」→「Any_Shortcut_for_AviUtl2設定」で設定画面を開く
 2. 「追加」で新規コマンドを作成
 3. ステップ（アクション）を追加
 4. AviUtl2 再起動後、「ショートカットキーの設定」画面でキーを割り当て
 
 ## 設定ファイル
 
-`Every_shortcut.json` に保存される（DLL 同階層または `%AppData%\Any_Shortcut_for_AviUtl2\`）。
-
-## ライセンス
-
-MIT License
+`Any_Shortcut_for_AviUtl2.json` に保存される（DLL 同階層または `%AppData%\Any_Shortcut_for_AviUtl2\`）。
