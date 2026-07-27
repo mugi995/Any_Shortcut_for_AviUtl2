@@ -12,7 +12,7 @@ std::vector<ShortcutCommand> g_commands;
 
 COMMON_PLUGIN_TABLE common_plugin_table = {
     L"Any_Shortcut_for_AviUtl2",
-    L"Any_Shortcut_for_AviUtl2 version 1.00"
+    L"Any_Shortcut_for_AviUtl2 version 0.1.0"
 };
 
 EXTERN_C __declspec(dllexport) DWORD RequiredVersion() { return 2003300; }
@@ -106,7 +106,7 @@ EXTERN_C __declspec(dllexport) void RegisterPlugin(HOST_APP_TABLE* host) {
     g_edit_handle = host->create_edit_handle();
 
     // SplitFilters 方式: set_plugin_information も呼ぶ
-    host->set_plugin_information(L"Any_Shortcut_for_AviUtl2 version 1.00");
+    host->set_plugin_information(L"Any_Shortcut_for_AviUtl2 version 0.1.0");
 
     ConfigManager::LoadConfig();
 
