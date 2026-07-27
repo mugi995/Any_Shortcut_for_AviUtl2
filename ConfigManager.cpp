@@ -1,6 +1,5 @@
 ﻿#include "ConfigManager.h"
 #include <windows.h>
-#include <shlobj.h>
 #include <fstream>
 #include <sstream>
 #include <algorithm>
@@ -18,16 +17,6 @@ namespace ConfigManager {
     }
 
     std::wstring GetConfigFilePath() {
-        std::wstring dll_path = GetDllFolderPath() + L"\\Any_Shortcut_for_AviUtl2.json";
-        if (GetFileAttributesW(dll_path.c_str()) != INVALID_FILE_ATTRIBUTES) {
-            return dll_path;
-        }
-        WCHAR app_data[MAX_PATH] = {0};
-        if (SUCCEEDED(SHGetFolderPathW(nullptr, CSIDL_APPDATA, nullptr, 0, app_data))) {
-            std::wstring dir = std::wstring(app_data) + L"\\Any_Shortcut_for_AviUtl2";
-            CreateDirectoryW(dir.c_str(), nullptr);
-            return dir + L"\\config.json";
-        }
         return GetDllFolderPath() + L"\\Any_Shortcut_for_AviUtl2.json";
     }
 
@@ -151,21 +140,8 @@ namespace ConfigManager {
     }
 
     bool LoadConfig() {
-        std::wstring appdata_path;
-        {
-            WCHAR app_data[MAX_PATH] = {0};
-            if (SUCCEEDED(SHGetFolderPathW(nullptr, CSIDL_APPDATA, nullptr, 0, app_data))) {
-                appdata_path = std::wstring(app_data) + L"\\Any_Shortcut_for_AviUtl2\\config.json";
-            }
-        }
-        std::wstring dll_path = GetDllFolderPath() + L"\\Any_Shortcut_for_AviUtl2.json";
-
-        std::wstring path = dll_path;
+        std::wstring path = GetDllFolderPath() + L"\\Any_Shortcut_for_AviUtl2.json";
         std::ifstream ifs(path, std::ios::binary);
-        if (!ifs.is_open() && !appdata_path.empty()) {
-            path = appdata_path;
-            ifs.open(path, std::ios::binary);
-        }
         if (!ifs.is_open()) {
             CreateDefaultCommands();
             SaveConfig();
