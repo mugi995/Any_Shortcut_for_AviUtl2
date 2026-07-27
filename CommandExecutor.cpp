@@ -276,49 +276,66 @@ namespace CommandExecutor {
                             }
                         } else {
                             std::string val_utf8 = WStringToString(step.param_value);
-                            bool is_add = false, is_sub = false;
-                            if (!val_utf8.empty() && val_utf8[0] == '=') {
-                                // 絶対値モード (= プレフィックスを除去)
-                                val_utf8 = val_utf8.substr(1);
-                            } else if (!val_utf8.empty() && val_utf8[0] == '+') {
-                                is_add = true; val_utf8 = val_utf8.substr(1);
-                            } else if (!val_utf8.empty() && val_utf8[0] == '-') {
-                                is_sub = true; val_utf8 = val_utf8.substr(1);
-                            }
 
-                            // カンマ区切りの多値パラメータ対応
-                            LPCSTR cur_val = edit->get_object_item_value(obj, step.target_name.c_str(), step.param_name.c_str());
-                            if (cur_val) {
-                                std::string cur(cur_val);
-                                size_t comma = cur.find(',');
-                                size_t new_comma = val_utf8.find(',');
-                                if (comma != std::string::npos && new_comma == std::string::npos) {
-                                    if (is_add || is_sub) {
-                                        // 加減算: カンマ前の数値部分のみ演算
-                                        std::string first = cur.substr(0, comma);
-                                        std::string rest = cur.substr(comma);
+                            // 汎用TOGGLEハンドリング（CHECK型など全ON/OFFパラメータ向け）
+                            if (_stricmp(val_utf8.c_str(), "TOGGLE") == 0) {
+                                LPCSTR cur_val = edit->get_object_item_value(obj, step.target_name.c_str(), step.param_name.c_str());
+                                if (cur_val) {
+                                    std::string cur(cur_val);
+                                    if (cur == "0") val_utf8 = "1";
+                                    else if (cur == "1") val_utf8 = "0";
+                                    else if (cur == "OFF") val_utf8 = "ON";
+                                    else if (cur == "ON") val_utf8 = "OFF";
+                                    else val_utf8 = cur;
+                                }
+                            } else {
+                                bool is_add = false, is_sub = false;
+                                if (!val_utf8.empty() && val_utf8[0] == '=') {
+                                    val_utf8 = val_utf8.substr(1);
+                                } else if (!val_utf8.empty() && val_utf8[0] == '+') {
+                                    is_add = true; val_utf8 = val_utf8.substr(1);
+                                } else if (!val_utf8.empty() && val_utf8[0] == '-') {
+                                    is_sub = true; val_utf8 = val_utf8.substr(1);
+                                }
+
+                                LPCSTR cur_val = edit->get_object_item_value(obj, step.target_name.c_str(), step.param_name.c_str());
+                                if (cur_val) {
+                                    std::string cur(cur_val);
+                                    size_t comma = cur.find(',');
+                                    size_t new_comma = val_utf8.find(',');
+                                    if (comma != std::string::npos && new_comma == std::string::npos) {
+                                        if (is_add || is_sub) {
+                                            std::string first = cur.substr(0, comma);
+                                            std::string rest = cur.substr(comma);
+                                            try {
+                                                double v = std::stod(first) + (is_add ? std::stod(val_utf8) : -std::stod(val_utf8));
+                                                val_utf8 = std::to_string(v);
+                                                size_t d = val_utf8.find('.');
+                                                if (d != std::string::npos) val_utf8 = val_utf8.substr(0, d + 3);
+                                            } catch (...) {}
+                                            val_utf8 += rest;
+                                        } else {
+                                            val_utf8 = val_utf8 + cur.substr(comma);
+                                        }
+                                    } else if (is_add || is_sub) {
                                         try {
-                                            double v = std::stod(first) + (is_add ? std::stod(val_utf8) : -std::stod(val_utf8));
+                                            double v = std::stod(cur) + (is_add ? std::stod(val_utf8) : -std::stod(val_utf8));
                                             val_utf8 = std::to_string(v);
-                                            size_t d = val_utf8.find('.');
-                                            if (d != std::string::npos) val_utf8 = val_utf8.substr(0, d + 3);
                                         } catch (...) {}
-                                        val_utf8 += rest;
-                                    } else {
-                                        val_utf8 = val_utf8 + cur.substr(comma);
                                     }
-                                } else if (is_add || is_sub) {
-                                    try {
-                                        double v = std::stod(cur) + (is_add ? std::stod(val_utf8) : -std::stod(val_utf8));
-                                        val_utf8 = std::to_string(v);
-                                    } catch (...) {}
                                 }
                             }
-                            bool ok = edit->set_object_item_value(obj, step.target_name.c_str(), step.param_name.c_str(), val_utf8.c_str());
-                            if (g_logger) {
-                                g_logger->log(g_logger, (L"[SET_PARAM] set_object_item_value result=" + std::to_wstring(ok)).c_str());
+                            try {
+                                bool ok = edit->set_object_item_value(obj, step.target_name.c_str(), step.param_name.c_str(), val_utf8.c_str());
+                                if (g_logger) {
+                                    g_logger->log(g_logger, (L"[SET_PARAM] set_object_item_value result=" + std::to_wstring(ok)).c_str());
+                                }
+                                if (ok) any_success = true;
+                            } catch (...) {
+                                if (g_logger) {
+                                    g_logger->warn(g_logger, L"[SET_PARAM] set_object_item_value threw exception");
+                                }
                             }
-                            if (ok) any_success = true;
                         }
                     }
                     break;
