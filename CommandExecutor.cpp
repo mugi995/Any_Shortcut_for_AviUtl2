@@ -212,10 +212,9 @@ namespace CommandExecutor {
                         if (!alias_utf8.empty()) {
                             new_obj = edit->create_object_from_alias(alias_utf8.c_str(), layer, frame, 0);
                         }
-                        // エイリアスファイルがなければ、ファイル名からエフェクト名を抽出してフォールバック
-                        if (!new_obj) {
+                        // エイリアスが見つからない場合、ファイル名からエフェクト名を抽出してフォールバック
+                        if (!new_obj && alias_utf8.empty()) {
                             std::wstring effect_name = step.target_name;
-                            // パス部分と拡張子を除去
                             size_t slash = effect_name.find_last_of(L"\\/");
                             if (slash != std::wstring::npos) effect_name = effect_name.substr(slash + 1);
                             size_t dot = effect_name.find(L".object");
