@@ -295,6 +295,7 @@ namespace SettingDialog {
         if (pType == 3) {
             ShowWindow(hCheckCombo, SW_SHOW);
             SendMessageW(hCheckCombo, CB_RESETCONTENT, 0, 0);
+            SendMessageW(hCheckCombo, CB_ADDSTRING, 0, (LPARAM)L"TOGGLE");
             SendMessageW(hCheckCombo, CB_ADDSTRING, 0, (LPARAM)L"ON");
             SendMessageW(hCheckCombo, CB_ADDSTRING, 0, (LPARAM)L"OFF");
             SendMessageW(hCheckCombo, CB_SETCURSEL, 0, 0);
@@ -613,6 +614,12 @@ namespace SettingDialog {
                         }
 
                         // 位置コンボ復元
+                        {
+                            int showPos = (st.type == ActionType::DROP_OBJECT) ? SW_SHOW : SW_HIDE;
+                            ShowWindow(GetDlgItem(hwnd, IDC_STATIC_POSLABEL), showPos);
+                            ShowWindow(GetDlgItem(hwnd, IDC_COMBO_POS), showPos);
+                            ShowWindow(GetDlgItem(hwnd, IDC_BTN_BROWSE), showPos);
+                        }
                         if (st.type == ActionType::DROP_OBJECT) {
                             HWND hPos = GetDlgItem(hwnd, IDC_COMBO_POS);
                             int posIdx = 0;
