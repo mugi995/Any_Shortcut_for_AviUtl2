@@ -38,5 +38,3 @@
 #define IDC_BTN_FILE_BROWSE     1039
 #define IDC_COMBO_FONTVAL       1040
 #define IDC_COMBO_SELECTVAL     1041
-
-#define IDR_VERSION           1

@@ -1,27 +1,38 @@
-﻿#include <windows.h>
+﻿#pragma code_page(65001)
+#include <windows.h>
 #include "resource.h"
 
-IDR_VERSION VERSIONINFO
-FILEVERSION     0,1,0,0
-PRODUCTVERSION  0,1,0,0
-FILEOS          VOS_NT_WINDOWS32
-FILETYPE        VFT_DLL
+#include <winver.h>
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,1,0,0
+ PRODUCTVERSION 0,1,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
         BLOCK "041104b0"
         BEGIN
-            VALUE "FileDescription", "Any_Shortcut_for_AviUtl2 - AviUtl2 ショートカット機能拡張プラグイン"
-            VALUE "FileVersion", "0.1.0"
-            VALUE "InternalName", "Any_Shortcut_for_AviUtl2"
+            VALUE "FileDescription", "Any_Shortcut_for_AviUtl2 - AviUtl2 \u30b7\u30e7\u30fc\u30c8\u30ab\u30c3\u30c8\u6a5f\u80fd\u62e1\u5f35\u30d7\u30e9\u30b0\u30a4\u30f3"
+            VALUE "FileVersion", "0.1.0.0"
+            VALUE "InternalName", "Any_Shortcut_for_AviUtl2.aux2"
             VALUE "LegalCopyright", "Copyright (C) 2026"
+            VALUE "OriginalFilename", "Any_Shortcut_for_AviUtl2.aux2"
             VALUE "ProductName", "Any_Shortcut_for_AviUtl2"
-            VALUE "ProductVersion", "0.1.0"
+            VALUE "ProductVersion", "0.1.0.0"
         END
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x0411, 1200
+        VALUE "Translation", 0x411, 1200
     END
 END
 
