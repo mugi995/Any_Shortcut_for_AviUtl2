@@ -8,7 +8,7 @@
 #include <memory>
 #include <functional>
 
-#include "plugin2_utf8.h"
+#include "plugin2.h"
 #include "logger2.h"
 #include "config2.h"
 
