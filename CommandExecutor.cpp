@@ -50,20 +50,25 @@ namespace CommandExecutor {
         }
     }
 
+    static HWND g_scan_skip_hwnd = nullptr;
+
+    static BOOL CALLBACK ScanMenuEnumProc(HWND hwnd, LPARAM lParam) {
+        if (hwnd == g_scan_skip_hwnd) return TRUE;
+        auto* vec = (std::vector<std::pair<std::wstring, int>>*)lParam;
+        HMENU hMenu = GetMenu(hwnd);
+        if (hMenu) ScanMenuRecursive(hMenu, L"", *vec);
+        return TRUE;
+    }
+
     void ScanMenuCommands(std::vector<std::pair<std::wstring, int>>& out) {
         out.clear();
         HWND hMain = g_edit_handle ? g_edit_handle->get_host_app_window() : nullptr;
+        g_scan_skip_hwnd = hMain;
         if (hMain) {
             HMENU hMenu = GetMenu(hMain);
             ScanMenuRecursive(hMenu, L"", out);
         }
-        // メニューバー以外のウィンドウも探索
-        EnumThreadWindows(GetCurrentThreadId(), [](HWND hwnd, LPARAM lp) -> BOOL {
-            auto* vec = (std::vector<std::pair<std::wstring, int>>*)lp;
-            HMENU hMenu = GetMenu(hwnd);
-            if (hMenu) ScanMenuRecursive(hMenu, L"", *vec);
-            return TRUE;
-        }, (LPARAM)&out);
+        EnumThreadWindows(GetCurrentThreadId(), ScanMenuEnumProc, (LPARAM)&out);
     }
 
     // エイリアスデータにエフェクト定義をテキストとして追加
