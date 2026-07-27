@@ -193,17 +193,18 @@ namespace CommandExecutor {
                                         (step.target_name.size() > 4 && step.target_name[1] == L':');
 
                     if (is_file_path) {
-                        // create_object_from_media_file は動画+音声を分離不可な結合オブジェクトになるため、
-                        // 動画ファイルエイリアスを構築して create_object_from_alias を優先
-                        std::wstring donghua = L"\u52D5\u753B\u30D5\u30A1\u30A4\u30EB"; // 動画ファイル
-                        std::string alias_utf8 = "[Object.1]\r\neffect.name=" + WStringToString(donghua) + "\r\n";
-                        alias_utf8 += WStringToString(donghua) + "=" + WStringToString(step.target_name) + "\r\n";
-                        new_obj = edit->create_object_from_alias(alias_utf8.c_str(), layer, frame, 0);
-                        if (!new_obj) {
-                            new_obj = edit->create_object_from_media_file(step.target_name.c_str(), layer, frame, 0);
+                        std::wstring donghua = L"\u52D5\u753B\u30D5\u30A1\u30A4\u30EB";
+                        new_obj = edit->create_object(donghua.c_str(), layer, frame, 0);
+                        if (new_obj) {
+                            std::string file_utf8 = WStringToString(step.target_name);
+                            if (!edit->set_object_item_value(new_obj, donghua.c_str(), L"file", file_utf8.c_str()) &&
+                                !edit->set_object_item_value(new_obj, donghua.c_str(), donghua.c_str(), file_utf8.c_str())) {
+                                edit->delete_object(new_obj);
+                                new_obj = nullptr;
+                            }
                         }
                         if (!new_obj) {
-                            new_obj = edit->create_object(donghua.c_str(), layer, frame, 0);
+                            new_obj = edit->create_object_from_media_file(step.target_name.c_str(), layer, frame, 0);
                         }
                         if (!new_obj && g_logger) g_logger->warn(g_logger, (L"[DROP] File drop failed: " + step.target_name).c_str());
                     } else if (is_alias_path) {
