@@ -10,6 +10,18 @@ namespace SettingDialog {
 
     static HWND g_hMainDlg = nullptr;
     static ShortcutCommand* g_editing_cmd = nullptr;
+    static WNDPROC g_oldListProc = nullptr;
+
+    static LRESULT CALLBACK ListViewProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
+        if (msg == WM_KEYDOWN) {
+            if (wp == VK_DELETE || wp == 'D') {
+                HWND hParent = GetParent(hwnd);
+                SendMessageW(hParent, WM_COMMAND, MAKEWPARAM(IDC_BTN_DELETE, BN_CLICKED), 0);
+                return 0;
+            }
+        }
+        return CallWindowProcW(g_oldListProc, hwnd, msg, wp, lp);
+    }
 
     // アクション種別名
     static const wchar_t* ActionTypeName(ActionType t) {
@@ -895,6 +907,7 @@ namespace SettingDialog {
                 g_setting_hwnd = hwnd;
                 g_hMainDlg = hwnd;
                 HWND hList = GetDlgItem(hwnd, IDC_CMD_LIST);
+                g_oldListProc = (WNDPROC)(LONG_PTR)SetWindowLongPtrW(hList, GWLP_WNDPROC, (LONG_PTR)ListViewProc);
 
                 ListView_SetExtendedListViewStyle(hList, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
                 InitListViewColumns(hList);
